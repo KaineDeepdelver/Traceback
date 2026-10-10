@@ -5,7 +5,7 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM php:8.3-apache
+FROM php:8.4-apache
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libcurl4-openssl-dev libonig-dev libxml2-dev libzip-dev unzip \
     && docker-php-ext-install -j"$(nproc)" curl mbstring xml zip \
