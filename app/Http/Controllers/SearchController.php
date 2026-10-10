@@ -3,8 +3,16 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Services\SearchService;
 
 class SearchController extends Controller {
+
+    private searchService $searchService;
+
+    public function __construct(SearchService $searchService) {
+
+        $this -> SearchService = $searchService;
+    }
     
     public function index() {
 
@@ -12,15 +20,13 @@ class SearchController extends Controller {
     }
 
     public function search(Request $request) {
-        $request -> validate([
+        $validated = $request -> validate([
             'query' => ['required', 'string', 'max:2000'],
         ]);
 
-        $query = $request -> input('query');
+        $query = $validated['query'];
+        $result = $this -> searchService -> investigate($query);
 
-        return response() -> json([
-            'query' => $query,
-            'message' => 'Traceback received your research query.',
-        ]);
+        return response() -> json($result);
     }
 }

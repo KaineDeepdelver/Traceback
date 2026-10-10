@@ -51,4 +51,11 @@ button {
 #result {
     margin-top: 24px;
     overflow-wrap: anywhere;
+    white-space: pre-wrap;
+    text-align: left;
+    font-family: monospace;
+}
+
+#result.error {
+    color: #ff7b7b;
 }

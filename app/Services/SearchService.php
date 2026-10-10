@@ -1,5 +1,5 @@
 <?php
-namespace App\Services {
+namespace App\Services;
 
     class SearchService {
         
@@ -13,6 +13,5 @@ namespace App\Services {
             ];
         }
     }
-}
 
 ?>
