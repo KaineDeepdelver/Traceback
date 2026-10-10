@@ -7,11 +7,11 @@ use App\Services\SearchService;
 
 class SearchController extends Controller {
 
-    private searchService $searchService;
+    private SearchService $searchService;
 
     public function __construct(SearchService $searchService) {
 
-        $this -> SearchService = $searchService;
+        $this -> searchService = $searchService;
     }
     
     public function index() {

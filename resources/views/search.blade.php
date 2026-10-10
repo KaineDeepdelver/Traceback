@@ -11,14 +11,14 @@
     <main>
         <h1>Traceback</h1>
         <p>The Internet, Investigated...</p>
-        <p>Discover the meaning, origins, and sources behind anything.</p>
+        <p>Discover the meaning and documented history behind words, slang, and phrases.</p>
 
         <form id='search-form' action="{{ url('/search') }}" method="POST">
             <input 
             id='query' 
             name='query'
             type='text' 
-            placeholder='Enter a word, phrase, or claim...'
+            placeholder='Enter a word, slang term, or phrase...'
             maxlength='2000'
             required
             >

@@ -1,12 +1,17 @@
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 
 const form = document.getElementById('search-form');
 const input = document.getElementById('query');
-const result = document.getElementById('result');
+const resultBox = document.getElementById('result');
+const button = form.querySelector('button');
 
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    result.textContent = 'Traceback is investigating...';
+    resultBox.className = '';
+    resultBox.textContent = 'Traceback is investigating...';
+    button.disabled = true;
 
     try {
         const response = await fetch(form.action, {
@@ -24,59 +29,62 @@ form.addEventListener('submit', async (event) => {
         });
 
         const data = await response.json();
+        console.log('Search response:', data);
 
         if (!response.ok) {
             throw new Error(data.message || 'Search request failed.');
         }
 
-        result.replaceChildren();
+        resultBox.replaceChildren();
 
         const section = document.createElement('section');
-        section.className = 'research-result';
+        section.className = 'research-resultBox';
 
         const heading = document.createElement('h2');
-        heading.textContent = 'Research Results';
+        heading.textContent = `Research: ${data.query}`;
         section.appendChild(heading);
 
-        const query = document.createElement('p');
-        query.textContent = `Query: ${data.query}`;
-        section.appendChild(query);
-
         const status = document.createElement('p');
+        status.className = 'resultBox-status';
         status.textContent = `Status: ${data.status}`;
         section.appendChild(status);
 
         const summaryHeading = document.createElement('h3');
-        summaryHeading.textContent = 'Summary';
+        summaryHeading.textContent = 'What we found: ';
         section.appendChild(summaryHeading);
 
-        const summary = document.createElement('p');
-        summary.textContent = data.summary ?? 'No summary available yet.';
+        const summary = document.createElement('div');
+        const markdown = (data.summary ?? '').replaceAll('\\*', '*');
+
+        summary.innerHTML = DOMPurify.sanitize(marked.parse(markdown));
         section.appendChild(summary);
 
         const sourcesHeading = document.createElement('h3');
         sourcesHeading.textContent = 'Sources';
         section.appendChild(sourcesHeading);
 
-        const sources = document.createElement('ul');
+        const sourcesList = document.createElement('ul');
 
         for (const source of data.sources ?? []) {
             const item = document.createElement('li');
-            item.textContent = typeof source === 'string'
-                ? source
-                : JSON.stringify(source);
-            sources.appendChild(item);
+            const link = document.createElement('a');
+            const url = new URL(source.url);
+
+            link.href = url.href;
+            link.textContent = source.title;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            
+            item.appendChild(link);
+            sourcesList.appendChild(item);
         }
 
-        if (sources.children.length === 0) {
-            const item = document.createElement('li');
-            item.textContent = 'No sources found yet.';
-            sources.appendChild(item);
-        }
-
-        section.appendChild(sources);
-        result.appendChild(section);
+        section.appendChild(sourcesList);
+        resultBox.appendChild(section);
     } catch (error) {
-        result.textContent = error.message;
+        resultBox.className = 'error';
+        resultBox.textContent = error.message;
+    } finally {
+        button.disabled = false;
     }
 });
